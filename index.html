@@ -298,15 +298,12 @@
             <p>Diario Digitale della Squadra</p>
         </div>
 
-        <div class="warning-banner">
-            ⚠️ Modalità Demo - I dati sono salvati localmente sul tuo dispositivo
-        </div>
+
 
         <div class="nav-tabs">
             <button class="nav-tab active" data-tab="dashboard">📊 Dashboard</button>
             <button class="nav-tab" data-tab="training">🏃‍♀️ Allenamento</button>
             <button class="nav-tab" data-tab="match">⚽ Partita</button>
-            <button class="nav-tab" data-tab="notes">📝 Note</button>
             <button class="nav-tab" data-tab="history">📅 Storico</button>
         </div>
 
@@ -321,10 +318,6 @@
                 <div class="stats-card">
                     <span class="stats-number" id="totalMatches">0</span>
                     <span class="stats-label">Partite</span>
-                </div>
-                <div class="stats-card">
-                    <span class="stats-number" id="totalNotes">0</span>
-                    <span class="stats-label">Note</span>
                 </div>
                 <div class="stats-card">
                     <span class="stats-number" id="winRate">0%</span>
@@ -345,10 +338,6 @@
                 <div class="form-group">
                     <label for="trainingDate">Data:</label>
                     <input type="date" id="trainingDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="trainingDuration">Durata (minuti):</label>
-                    <input type="number" id="trainingDuration" min="30" max="180" required>
                 </div>
                 <div class="form-group">
                     <label for="trainingType">Tipo di Allenamento:</label>
@@ -420,35 +409,7 @@
         </div>
 
         <!-- Notes Tab -->
-        <div class="tab-content" id="notes">
-            <h2>📝 Nuova Nota</h2>
-            <form id="noteForm">
-                <div class="form-group">
-                    <label for="noteDate">Data:</label>
-                    <input type="date" id="noteDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="noteCategory">Categoria:</label>
-                    <select id="noteCategory" required>
-                        <option value="">Seleziona...</option>
-                        <option value="obiettivi">Obiettivi</option>
-                        <option value="progressi">Progressi</option>
-                        <option value="osservazioni">Osservazioni</option>
-                        <option value="motivazione">Motivazione</option>
-                        <option value="altro">Altro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="noteTitle">Titolo:</label>
-                    <input type="text" id="noteTitle" required placeholder="Titolo della nota">
-                </div>
-                <div class="form-group">
-                    <label for="noteContent">Contenuto:</label>
-                    <textarea id="noteContent" rows="6" required placeholder="Scrivi qui la tua nota..."></textarea>
-                </div>
-                <button type="submit" class="btn">💾 Salva Nota</button>
-            </form>
-        </div>
+        <!-- Rimosso -->
 
         <!-- History Tab -->
         <div class="tab-content" id="history">
@@ -457,7 +418,6 @@
                 <button class="nav-tab active" data-history="all">Tutte</button>
                 <button class="nav-tab" data-history="trainings">Allenamenti</button>
                 <button class="nav-tab" data-history="matches">Partite</button>
-                <button class="nav-tab" data-history="notes">Note</button>
             </div>
             <div id="historyContent">
                 <div class="no-entries">Nessun dato disponibile</div>
@@ -548,7 +508,6 @@
             const training = {
                 id: Date.now(),
                 date: document.getElementById('trainingDate').value,
-                duration: parseInt(document.getElementById('trainingDuration').value),
                 type: document.getElementById('trainingType').value,
                 intensity: parseInt(document.getElementById('trainingIntensity').value),
                 notes: document.getElementById('trainingNotes').value,
@@ -631,7 +590,6 @@
             // Update stats
             document.getElementById('totalTrainings').textContent = appData.trainings.length;
             document.getElementById('totalMatches').textContent = appData.matches.length;
-            document.getElementById('totalNotes').textContent = appData.notes.length;
             
             // Calculate win rate
             const wins = appData.matches.filter(m => m.result === 'vittoria').length;
@@ -641,8 +599,7 @@
             // Show recent activities
             const recentActivities = [
                 ...appData.trainings.map(t => ({...t, type: 'training', icon: '🏃‍♀️'})),
-                ...appData.matches.map(m => ({...m, type: 'match', icon: '⚽'})),
-                ...appData.notes.map(n => ({...n, type: 'note', icon: '📝'}))
+                ...appData.matches.map(m => ({...m, type: 'match', icon: '⚽'}))
             ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5);
             
             const container = document.getElementById('recentActivities');
@@ -664,11 +621,9 @@
         function getActivityDescription(activity) {
             switch(activity.type) {
                 case 'training':
-                    return `Allenamento ${activity.type} - ${activity.duration} min (Intensità: ${activity.intensity}/10)`;
+                    return `Allenamento ${activity.type} (Intensità: ${activity.intensity}/10)`;
                 case 'match':
                     return `${activity.opponent} - ${activity.ourScore}:${activity.opponentScore} (${capitalizeFirst(activity.result)})`;
-                case 'note':
-                    return `${capitalizeFirst(activity.category)}: ${activity.title}`;
                 default:
                     return '';
             }
@@ -698,14 +653,10 @@
                 case 'matches':
                     items = appData.matches.map(m => ({...m, type: 'match', icon: '⚽'}));
                     break;
-                case 'notes':
-                    items = appData.notes.map(n => ({...n, type: 'note', icon: '📝'}));
-                    break;
                 default:
                     items = [
                         ...appData.trainings.map(t => ({...t, type: 'training', icon: '🏃‍♀️'})),
-                        ...appData.matches.map(m => ({...m, type: 'match', icon: '⚽'})),
-                        ...appData.notes.map(n => ({...n, type: 'note', icon: '📝'}))
+                        ...appData.matches.map(m => ({...m, type: 'match', icon: '⚽'}))
                     ];
             }
 
@@ -731,7 +682,7 @@
                                 <span class="entry-date">${item.icon} ${formatDate(item.date)}</span>
                             </div>
                             <p><strong>Allenamento ${capitalizeFirst(item.type)}</strong></p>
-                            <p>Durata: ${item.duration} minuti | Intensità: ${item.intensity}/10</p>
+                            <p>Intensità: ${item.intensity}/10</p>
                             ${item.notes ? `<p>${item.notes}</p>` : ''}
                             <div class="entry-actions">
                                 <button class="btn btn-danger" onclick="deleteItem('trainings', ${item.id})">🗑️ Elimina</button>
