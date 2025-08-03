@@ -429,8 +429,7 @@
         // Data storage
         let appData = {
             trainings: [],
-            matches: [],
-            notes: []
+            matches: []
         };
 
         // Load data from localStorage
@@ -457,7 +456,6 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('trainingDate').value = today;
             document.getElementById('matchDate').value = today;
-            document.getElementById('noteDate').value = today;
         }
 
         // Setup event listeners
@@ -476,7 +474,6 @@
             // Forms
             document.getElementById('trainingForm').addEventListener('submit', handleTrainingSubmit);
             document.getElementById('matchForm').addEventListener('submit', handleMatchSubmit);
-            document.getElementById('noteForm').addEventListener('submit', handleNoteSubmit);
 
             // Intensity slider
             document.getElementById('trainingIntensity').addEventListener('input', (e) => {
@@ -519,7 +516,8 @@
             
             // Reset form
             e.target.reset();
-            document.getElementById('trainingDate').value = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('trainingDate').value = today;
             document.getElementById('trainingIntensity').value = 5;
             document.getElementById('intensityValue').textContent = '5';
             
@@ -553,7 +551,8 @@
             
             // Reset form
             e.target.reset();
-            document.getElementById('matchDate').value = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('matchDate').value = today;
             
             updateDashboard();
             updateHistory();
@@ -703,21 +702,6 @@
                             ${item.notes ? `<p>${item.notes}</p>` : ''}
                             <div class="entry-actions">
                                 <button class="btn btn-danger" onclick="deleteItem('matches', ${item.id})">🗑️ Elimina</button>
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'note':
-                    content = `
-                        <div class="entry-card">
-                            <div class="entry-header">
-                                <span class="entry-date">${item.icon} ${formatDate(item.date)}</span>
-                            </div>
-                            <p><strong>${item.title}</strong></p>
-                            <p><em>${capitalizeFirst(item.category)}</em></p>
-                            <p>${item.content}</p>
-                            <div class="entry-actions">
-                                <button class="btn btn-danger" onclick="deleteItem('notes', ${item.id})">🗑️ Elimina</button>
                             </div>
                         </div>
                     `;
