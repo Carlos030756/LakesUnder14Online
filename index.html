@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lakes Under 14 - Diario Squadra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 120px;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #cbd5e0, #a0aec0);
+            margin-left: 10px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181, #f56565);
+        }
+
+        .entry-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .entry-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .entry-date {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .entry-actions button {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .no-entries {
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+            padding: 40px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .warning-banner {
+            background: linear-gradient(135deg, #f6e05e, #ecc94b);
+            color: #744210;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                font-size: 0.8rem;
+                padding: 12px 8px;
+                min-width: 100px;
+            }
+            
+            .tab-content {
+                padding: 15px;
+            }
+            
+            .entry-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .entry-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .stats-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* Form improvements for mobile */
+        @media (max-width: 480px) {
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏐 Lakes Under 14</h1>
+            <p>Diario Digitale della Squadra</p>
+        </div>
+
+        <div class="warning-banner">
+            ⚠️ Modalità Demo - I dati sono salvati localmente sul tuo dispositivo
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">📊 Dashboard</button>
+            <button class="nav-tab" data-tab="training">🏃‍♀️ Allenamento</button>
+            <button class="nav-tab" data-tab="match">⚽ Partita</button>
+            <button class="nav-tab" data-tab="notes">📝 Note</button>
+            <button class="nav-tab" data-tab="history">📅 Storico</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+            <h2>📊 Statistiche Generali</h2>
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <span class="stats-number" id="totalTrainings">0</span>
+                    <span class="stats-label">Allenamenti</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-number" id="totalMatches">0</span>
+                    <span class="stats-label">Partite</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-number" id="totalNotes">0</span>
+                    <span class="stats-label">Note</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-number" id="winRate">0%</span>
+                    <span class="stats-label">% Vittorie</span>
+                </div>
+            </div>
+            
+            <h3>📅 Ultime Attività</h3>
+            <div id="recentActivities">
+                <div class="no-entries">Nessuna attività recente</div>
+            </div>
+        </div>
+
+        <!-- Training Tab -->
+        <div class="tab-content" id="training">
+            <h2>🏃‍♀️ Nuovo Allenamento</h2>
+            <form id="trainingForm">
+                <div class="form-group">
+                    <label for="trainingDate">Data:</label>
+                    <input type="date" id="trainingDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="trainingDuration">Durata (minuti):</label>
+                    <input type="number" id="trainingDuration" min="30" max="180" required>
+                </div>
+                <div class="form-group">
+                    <label for="trainingType">Tipo di Allenamento:</label>
+                    <select id="trainingType" required>
+                        <option value="">Seleziona...</option>
+                        <option value="tecnico">Tecnico</option>
+                        <option value="fisico">Fisico</option>
+                        <option value="tattico">Tattico</option>
+                        <option value="completo">Completo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="trainingIntensity">Intensità (1-10):</label>
+                    <input type="range" id="trainingIntensity" min="1" max="10" value="5">
+                    <span id="intensityValue">5</span>
+                </div>
+                <div class="form-group">
+                    <label for="trainingNotes">Note:</label>
+                    <textarea id="trainingNotes" rows="4" placeholder="Descrivi l'allenamento, esercizi svolti, miglioramenti..."></textarea>
+                </div>
+                <button type="submit" class="btn">💾 Salva Allenamento</button>
+            </form>
+        </div>
+
+        <!-- Match Tab -->
+        <div class="tab-content" id="match">
+            <h2>⚽ Nuova Partita</h2>
+            <form id="matchForm">
+                <div class="form-group">
+                    <label for="matchDate">Data:</label>
+                    <input type="date" id="matchDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="opponent">Avversario:</label>
+                    <input type="text" id="opponent" required placeholder="Nome squadra avversaria">
+                </div>
+                <div class="form-group">
+                    <label for="matchType">Tipo:</label>
+                    <select id="matchType" required>
+                        <option value="">Seleziona...</option>
+                        <option value="amichevole">Amichevole</option>
+                        <option value="campionato">Campionato</option>
+                        <option value="torneo">Torneo</option>
+                        <option value="coppa">Coppa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="homeAway">Casa/Trasferta:</label>
+                    <select id="homeAway" required>
+                        <option value="">Seleziona...</option>
+                        <option value="casa">Casa</option>
+                        <option value="trasferta">Trasferta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ourScore">Nostro Punteggio:</label>
+                    <input type="number" id="ourScore" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="opponentScore">Punteggio Avversario:</label>
+                    <input type="number" id="opponentScore" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="matchNotes">Note sulla Partita:</label>
+                    <textarea id="matchNotes" rows="4" placeholder="Come è andata la partita, punti di forza, aree di miglioramento..."></textarea>
+                </div>
+                <button type="submit" class="btn">💾 Salva Partita</button>
+            </form>
+        </div>
+
+        <!-- Notes Tab -->
+        <div class="tab-content" id="notes">
+            <h2>📝 Nuova Nota</h2>
+            <form id="noteForm">
+                <div class="form-group">
+                    <label for="noteDate">Data:</label>
+                    <input type="date" id="noteDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="noteCategory">Categoria:</label>
+                    <select id="noteCategory" required>
+                        <option value="">Seleziona...</option>
+                        <option value="obiettivi">Obiettivi</option>
+                        <option value="progressi">Progressi</option>
+                        <option value="osservazioni">Osservazioni</option>
+                        <option value="motivazione">Motivazione</option>
+                        <option value="altro">Altro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="noteTitle">Titolo:</label>
+                    <input type="text" id="noteTitle" required placeholder="Titolo della nota">
+                </div>
+                <div class="form-group">
+                    <label for="noteContent">Contenuto:</label>
+                    <textarea id="noteContent" rows="6" required placeholder="Scrivi qui la tua nota..."></textarea>
+                </div>
+                <button type="submit" class="btn">💾 Salva Nota</button>
+            </form>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content" id="history">
+            <h2>📅 Storico Attività</h2>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-history="all">Tutte</button>
+                <button class="nav-tab" data-history="trainings">Allenamenti</button>
+                <button class="nav-tab" data-history="matches">Partite</button>
+                <button class="nav-tab" data-history="notes">Note</button>
+            </div>
+            <div id="historyContent">
+                <div class="no-entries">Nessun dato disponibile</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let appData = {
+            trainings: [],
+            matches: [],
+            notes: []
+        };
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('lakesUnder14Data');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('lakesUnder14Data', JSON.stringify(appData));
+        }
+
+        // Initialize app
+        function init() {
+            loadData();
+            setupEventListeners();
+            updateDashboard();
+            updateHistory();
+            
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('trainingDate').value = today;
+            document.getElementById('matchDate').value = today;
+            document.getElementById('noteDate').value = today;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    if (e.target.dataset.tab) {
+                        switchTab(e.target.dataset.tab);
+                    } else if (e.target.dataset.history) {
+                        filterHistory(e.target.dataset.history);
+                    }
+                });
+            });
+
+            // Forms
+            document.getElementById('trainingForm').addEventListener('submit', handleTrainingSubmit);
+            document.getElementById('matchForm').addEventListener('submit', handleMatchSubmit);
+            document.getElementById('noteForm').addEventListener('submit', handleNoteSubmit);
+
+            // Intensity slider
+            document.getElementById('trainingIntensity').addEventListener('input', (e) => {
+                document.getElementById('intensityValue').textContent = e.target.value;
+            });
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update nav
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Handle training form
+        function handleTrainingSubmit(e) {
+            e.preventDefault();
+            
+            const training = {
+                id: Date.now(),
+                date: document.getElementById('trainingDate').value,
+                duration: parseInt(document.getElementById('trainingDuration').value),
+                type: document.getElementById('trainingType').value,
+                intensity: parseInt(document.getElementById('trainingIntensity').value),
+                notes: document.getElementById('trainingNotes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            appData.trainings.push(training);
+            saveData();
+            
+            // Reset form
+            e.target.reset();
+            document.getElementById('trainingDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('trainingIntensity').value = 5;
+            document.getElementById('intensityValue').textContent = '5';
+            
+            updateDashboard();
+            updateHistory();
+            alert('✅ Allenamento salvato con successo!');
+        }
+
+        // Handle match form
+        function handleMatchSubmit(e) {
+            e.preventDefault();
+            
+            const ourScore = parseInt(document.getElementById('ourScore').value);
+            const opponentScore = parseInt(document.getElementById('opponentScore').value);
+            
+            const match = {
+                id: Date.now(),
+                date: document.getElementById('matchDate').value,
+                opponent: document.getElementById('opponent').value,
+                type: document.getElementById('matchType').value,
+                homeAway: document.getElementById('homeAway').value,
+                ourScore: ourScore,
+                opponentScore: opponentScore,
+                result: ourScore > opponentScore ? 'vittoria' : ourScore < opponentScore ? 'sconfitta' : 'pareggio',
+                notes: document.getElementById('matchNotes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            appData.matches.push(match);
+            saveData();
+            
+            // Reset form
+            e.target.reset();
+            document.getElementById('matchDate').value = new Date().toISOString().split('T')[0];
+            
+            updateDashboard();
+            updateHistory();
+            alert('✅ Partita salvata con successo!');
+        }
+
+        // Handle note form
+        function handleNoteSubmit(e) {
+            e.preventDefault();
+            
+            const note = {
+                id: Date.now(),
+                date: document.getElementById('noteDate').value,
+                category: document.getElementById('noteCategory').value,
+                title: document.getElementById('noteTitle').value,
+                content: document.getElementById('noteContent').value,
+                timestamp: new Date().toISOString()
+            };
+
+            appData.notes.push(note);
+            saveData();
+            
+            // Reset form
+            e.target.reset();
+            document.getElementById('noteDate').value = new Date().toISOString().split('T')[0];
+            
+            updateDashboard();
+            updateHistory();
+            alert('✅ Nota salvata con successo!');
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('totalTrainings').textContent = appData.trainings.length;
+            document.getElementById('totalMatches').textContent = appData.matches.length;
+            document.getElementById('totalNotes').textContent = appData.notes.length;
+            
+            // Calculate win rate
+            const wins = appData.matches.filter(m => m.result === 'vittoria').length;
+            const winRate = appData.matches.length > 0 ? Math.round((wins / appData.matches.length) * 100) : 0;
+            document.getElementById('winRate').textContent = winRate + '%';
+            
+            // Show recent activities
+            const recentActivities = [
+                ...appData.trainings.map(t => ({...t, type: 'training', icon: '🏃‍♀️'})),
+                ...appData.matches.map(m => ({...m, type: 'match', icon: '⚽'})),
+                ...appData.notes.map(n => ({...n, type: 'note', icon: '📝'}))
+            ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5);
+            
+            const container = document.getElementById('recentActivities');
+            if (recentActivities.length === 0) {
+                container.innerHTML = '<div class="no-entries">Nessuna attività recente</div>';
+            } else {
+                container.innerHTML = recentActivities.map(activity => `
+                    <div class="entry-card">
+                        <div class="entry-header">
+                            <span class="entry-date">${activity.icon} ${formatDate(activity.date)}</span>
+                        </div>
+                        <p>${getActivityDescription(activity)}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Get activity description
+        function getActivityDescription(activity) {
+            switch(activity.type) {
+                case 'training':
+                    return `Allenamento ${activity.type} - ${activity.duration} min (Intensità: ${activity.intensity}/10)`;
+                case 'match':
+                    return `${activity.opponent} - ${activity.ourScore}:${activity.opponentScore} (${capitalizeFirst(activity.result)})`;
+                case 'note':
+                    return `${capitalizeFirst(activity.category)}: ${activity.title}`;
+                default:
+                    return '';
+            }
+        }
+
+        // Update history
+        function updateHistory() {
+            filterHistory('all');
+        }
+
+        // Filter history
+        function filterHistory(filter) {
+            // Update nav
+            document.querySelectorAll('[data-history]').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.history === filter) {
+                    tab.classList.add('active');
+                }
+            });
+
+            let items = [];
+            
+            switch(filter) {
+                case 'trainings':
+                    items = appData.trainings.map(t => ({...t, type: 'training', icon: '🏃‍♀️'}));
+                    break;
+                case 'matches':
+                    items = appData.matches.map(m => ({...m, type: 'match', icon: '⚽'}));
+                    break;
+                case 'notes':
+                    items = appData.notes.map(n => ({...n, type: 'note', icon: '📝'}));
+                    break;
+                default:
+                    items = [
+                        ...appData.trainings.map(t => ({...t, type: 'training', icon: '🏃‍♀️'})),
+                        ...appData.matches.map(m => ({...m, type: 'match', icon: '⚽'})),
+                        ...appData.notes.map(n => ({...n, type: 'note', icon: '📝'}))
+                    ];
+            }
+
+            items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            const container = document.getElementById('historyContent');
+            if (items.length === 0) {
+                container.innerHTML = '<div class="no-entries">Nessun dato disponibile</div>';
+            } else {
+                container.innerHTML = items.map(item => createHistoryCard(item)).join('');
+            }
+        }
+
+        // Create history card
+        function createHistoryCard(item) {
+            let content = '';
+            
+            switch(item.type) {
+                case 'training':
+                    content = `
+                        <div class="entry-card">
+                            <div class="entry-header">
+                                <span class="entry-date">${item.icon} ${formatDate(item.date)}</span>
+                            </div>
+                            <p><strong>Allenamento ${capitalizeFirst(item.type)}</strong></p>
+                            <p>Durata: ${item.duration} minuti | Intensità: ${item.intensity}/10</p>
+                            ${item.notes ? `<p>${item.notes}</p>` : ''}
+                            <div class="entry-actions">
+                                <button class="btn btn-danger" onclick="deleteItem('trainings', ${item.id})">🗑️ Elimina</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'match':
+                    const resultClass = item.result === 'vittoria' ? '🏆' : item.result === 'sconfitta' ? '😞' : '🤝';
+                    content = `
+                        <div class="entry-card">
+                            <div class="entry-header">
+                                <span class="entry-date">${item.icon} ${formatDate(item.date)}</span>
+                            </div>
+                            <p><strong>${item.opponent}</strong> (${capitalizeFirst(item.homeAway)})</p>
+                            <p>${resultClass} ${item.ourScore}:${item.opponentScore} - ${capitalizeFirst(item.result)}</p>
+                            <p>Tipo: ${capitalizeFirst(item.type)}</p>
+                            ${item.notes ? `<p>${item.notes}</p>` : ''}
+                            <div class="entry-actions">
+                                <button class="btn btn-danger" onclick="deleteItem('matches', ${item.id})">🗑️ Elimina</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'note':
+                    content = `
+                        <div class="entry-card">
+                            <div class="entry-header">
+                                <span class="entry-date">${item.icon} ${formatDate(item.date)}</span>
+                            </div>
+                            <p><strong>${item.title}</strong></p>
+                            <p><em>${capitalizeFirst(item.category)}</em></p>
+                            <p>${item.content}</p>
+                            <div class="entry-actions">
+                                <button class="btn btn-danger" onclick="deleteItem('notes', ${item.id})">🗑️ Elimina</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            return content;
+        }
+
+        // Delete item
+        function deleteItem(type, id) {
+            if (confirm('Sei sicuro di voler eliminare questo elemento?')) {
+                appData[type] = appData[type].filter(item => item.id !== id);
+                saveData();
+                updateDashboard();
+                updateHistory();
+                alert('✅ Elemento eliminato!');
+            }
+        }
+
+        // Utility functions
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('it-IT');
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
