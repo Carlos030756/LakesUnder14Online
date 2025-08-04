@@ -359,6 +359,7 @@
                     <textarea id="trainingNotes" rows="4" placeholder="Descrivi l'allenamento, esercizi svolti, miglioramenti..."></textarea>
                 </div>
                 <button type="submit" class="btn">💾 Salva Allenamento</button>
+                <button type="button" class="btn btn-secondary" onclick="openFeedbackForm()">📤 Feedback Allenatore</button>
             </form>
         </div>
 
@@ -720,6 +721,12 @@
                 updateHistory();
                 alert('✅ Elemento eliminato!');
             }
+        }
+
+        // Open feedback form
+        function openFeedbackForm() {
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdc0Tpjqbwn5RM7GBsbe_PYHUV3xbpNgnRLHaKLJZ6gFblrKA/viewform?usp=pp_url";
+            window.open(formUrl, '_blank');
         }
 
         // Utility functions
