@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presenze Squadra</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 450px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 30px 20px; text-align: center; position: relative; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .date-display { font-size: 18px; opacity: 0.9; }
+        .content { padding: 20px; }
+        .player-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; margin: 10px 0; background: #f8f9fa; border-radius: 15px; border-left: 4px solid #e0e0e0; }
+        .player-item.present { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-left-color: #28a745; }
+        .player-item.absent { background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%); border-left-color: #dc3545; }
+        .player-name { font-size: 16px; font-weight: 500; color: #333; flex: 1; padding-right: 10px; }
+        .player-actions { display: flex; gap: 8px; align-items: center; }
+        .attendance-buttons { display: flex; gap: 8px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; min-width: 70px; }
+        .btn-present { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+        .btn-absent { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); color: white; }
+        .btn-delete { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; min-width: auto; font-size: 16px; }
+        .summary { margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; text-align: center; }
+        .stats { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .stat-number { font-size: 24px; font-weight: bold; display: block; }
+        .stat-present { color: #28a745; }
+        .stat-absent { color: #dc3545; }
+        .stat-total { color: #6c757d; }
+        .stat-label { font-size: 12px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .export-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .add-player-section { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 15px; border: 2px dashed #dee2e6; }
+        .add-player-input { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 16px; margin-bottom: 10px; transition: border-color 0.3s ease; }
+        .add-player-input:focus { outline: none; border-color: #007bff; }
+        .btn-add { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; width: 100%; }
+        .floating-action { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3); cursor: pointer; transition: all 0.3s ease; color: white; font-size: 24px; border: none; }
+        .floating-action:hover { transform: scale(1.1) rotate(90deg); }
+        .success-message { display: none; background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Presenze Squadra</h1>
+            <div class="date-display" id="currentDate"></div>
+        </div>
+        
+        <div class="content">
+            <div id="playerList"></div>
+
+            <div class="add-player-section">
+                <input type="text" id="newPlayerName" class="add-player-input" placeholder="Aggiungi nuova giocatrice..." maxlength="50">
+                <button class="btn btn-add" onclick="addPlayer()">➕ Aggiungi Giocatrice</button>
+            </div>
+
+            <div class="summary">
+                <h3>📊 Riepilogo</h3>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number stat-present" id="presentCount">0</span>
+                        <span class="stat-label">Presenti</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number stat-absent" id="absentCount">0</span>
+                        <span class="stat-label">Assenti</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number stat-total" id="totalCount">0</span>
+                        <span class="stat-label">Totale</span>
+                    </div>
+                </div>
+                
+                <button class="export-btn" onclick="exportToExcel()">💾 Scarica CSV</button>
+                <button class="export-btn" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);" onclick="resetAll()">🔄 Reset Tutto</button>
+                
+                <div class="success-message" id="successMessage">
+                    File CSV scaricato con successo!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="floating-action" onclick="resetAll()" title="Reset tutto">🔄</button>
+
+    <script>
+        const defaultPlayers = [
+            'Adele Scarpa 12',
+            'Agatha Quinto 12',
+            'Agnese Sbetti 13',
+            'Anna Pucciarelli 13',
+            'Anna Rossato 11',
+            'Beatrice Francescatti 12',
+            'Camilla Tamanini 12',
+            'Caterina Pasquini 12',
+            'Chiara Vettorazzi 12',
+            'Diletta Polla 12',
+            'Eleonora Baldi 13',
+            'Elisabeth Tomcsik 12',
+            'Ester Luciani 12',
+            'Francesca Nicetto 13',
+            'Ginevra Bovesi 12',
+            'Giorgia Ochner 13',
+            'Greta Famularo 12',
+            'Matilde Bassi 12',
+            'Maya Di Giulio 13',
+            'Nihal Badreddine 11',
+            'Sofia Casagrande 13'
+        ];
+
+        let players = [];
+        let attendance = {};
+
+        function initApp() {
+            // Carica dati salvati se esistono
+            const savedPlayers = localStorage.getItem('teamPlayers');
+            const savedAttendance = localStorage.getItem('teamAttendance');
+            
+            if (savedPlayers && savedAttendance) {
+                players = JSON.parse(savedPlayers);
+                attendance = JSON.parse(savedAttendance);
+            } else {
+                players = [...defaultPlayers];
+                players.forEach(p => attendance[p] = null);
+            }
+            
+            displayCurrentDate();
+            renderPlayerList();
+            updateSummary();
+        }
+
+        function displayCurrentDate() {
+            const today = new Date();
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('it-IT', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        }
+
+        function renderPlayerList() {
+            const listContainer = document.getElementById('playerList');
+            listContainer.innerHTML = '';
+            players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'player-item';
+                if(attendance[player]===true) div.classList.add('present');
+                if(attendance[player]===false) div.classList.add('absent');
+                div.innerHTML = `
+                    <span class="player-name">${player}</span>
+                    <div class="player-actions">
+                        <div class="attendance-buttons">
+                            <button class="btn btn-present" onclick="markAttendance('${player.replace(/'/g,"\\'")}',true)">✓</button>
+                            <button class="btn btn-absent" onclick="markAttendance('${player.replace(/'/g,"\\'")}',false)">✗</button>
+                        </div>
+                        <button class="btn btn-delete" onclick="deletePlayer('${player.replace(/'/g,"\\'")}')">×</button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+            
+            // Salva i dati aggiornati nel localStorage
+            localStorage.setItem('teamPlayers', JSON.stringify(players));
+            localStorage.setItem('teamAttendance', JSON.stringify(attendance));
+        }
+
+        function markAttendance(name, isPresent) { 
+            attendance[name]=isPresent; 
+            renderPlayerList(); 
+            updateSummary(); 
+        }
+
+        function updateSummary() {
+            const present = Object.values(attendance).filter(s=>s===true).length;
+            const absent = Object.values(attendance).filter(s=>s===false).length;
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('absentCount').textContent = absent;
+            document.getElementById('totalCount').textContent = players.length;
+        }
+
+        function addPlayer() {
+            const input = document.getElementById('newPlayerName');
+            const name = input.value.trim();
+            if(name && !players.includes(name)) {
+                players.push(name);
+                attendance[name]=null;
+                input.value='';
+                renderPlayerList();
+                updateSummary();
+            } else if(players.includes(name)) alert('Questa giocatrice è già nella lista!');
+            else alert('Inserisci un nome valido per la giocatrice!');
+        }
+
+        function deletePlayer(name) {
+            if(confirm(`Sei sicuro di voler rimuovere ${name}?`)) {
+                players = players.filter(p=>p!==name);
+                delete attendance[name];
+                renderPlayerList();
+                updateSummary();
+            }
+        }
+
+        function resetAll() {
+            if(confirm('Sei sicuro di voler resettare tutte le presenze?')) {
+                Object.keys(attendance).forEach(p=>attendance[p]=null);
+                renderPlayerList();
+                updateSummary();
+            }
+        }
+
+        function exportToExcel() {
+            const today = new Date().toLocaleDateString('it-IT');
+            const data = [];
+            data.push(['PRESENZE DEL ' + today.toUpperCase()]);
+            data.push(['']);
+            data.push(['Nome Giocatrice','Stato','Presente','Assente']);
+            players.forEach(p=>{
+                let s=' ', pre='', ass='';
+                if(attendance[p]===true){ s='Presente'; pre='✓'; }
+                if(attendance[p]===false){ s='Assente'; ass='✗'; }
+                data.push([p,s,pre,ass]);
+            });
+            data.push(['']); data.push(['RIEPILOGO']);
+            data.push(['Presenti', Object.values(attendance).filter(s=>s===true).length]);
+            data.push(['Assenti', Object.values(attendance).filter(s=>s===false).length]);
+            data.push(['Totale', players.length]);
+            const csv = data.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+            const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `presenze_${today.replace(/\//g,'-')}.csv`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            
+            // Mostra messaggio di successo
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+
+        document.getElementById('newPlayerName').addEventListener('keypress', e => { if(e.key==='Enter') addPlayer(); });
+        window.addEventListener('load', initApp);
+    </script>
+</body>
+</html>
