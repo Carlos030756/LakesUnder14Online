@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presenze Squadra</title>
+
+    <!-- Cache busting -->
+    <script>
+      const APP_VERSION = "2025-09-23-1"; // 🔁 Cambia questo valore a ogni deploy
+
+      // Forza ricarica se l'URL non contiene la versione aggiornata
+      (function () {
+        var url = new URL(window.location.href);
+        if (url.searchParams.get("v") !== APP_VERSION) {
+          url.searchParams.set("v", APP_VERSION);
+          window.location.replace(url.toString());
+        }
+      })();
+    </script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
@@ -84,6 +99,18 @@
     <button class="floating-action" onclick="resetAll()" title="Reset tutto">🔄</button>
 
     <script>
+        // Version check con localStorage
+        (function () {
+          const APP_VERSION = "2025-09-23-1"; // stesso valore di sopra
+          const savedVersion = localStorage.getItem("appVersion");
+          if (savedVersion !== APP_VERSION) {
+            // reset solo se necessario
+            localStorage.removeItem("teamPlayers");
+            localStorage.removeItem("teamAttendance");
+            localStorage.setItem("appVersion", APP_VERSION);
+          }
+        })();
+
         const defaultPlayers = [
             'Adele Scarpa 12',
             'Agatha Quinto 12',
@@ -112,7 +139,6 @@
         let attendance = {};
 
         function initApp() {
-            // Carica dati salvati se esistono
             const savedPlayers = localStorage.getItem('teamPlayers');
             const savedAttendance = localStorage.getItem('teamAttendance');
             
@@ -155,7 +181,6 @@
                 listContainer.appendChild(div);
             });
             
-            // Salva i dati aggiornati nel localStorage
             localStorage.setItem('teamPlayers', JSON.stringify(players));
             localStorage.setItem('teamAttendance', JSON.stringify(attendance));
         }
@@ -227,7 +252,6 @@
             link.download = `presenze_${today.replace(/\//g,'-')}.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
             
-            // Mostra messaggio di successo
             document.getElementById('successMessage').style.display = 'block';
             setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
